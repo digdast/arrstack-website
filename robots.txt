@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://arrstack.ertechlab.com/sitemap.xml

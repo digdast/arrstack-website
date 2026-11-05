@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArrStack // One-Shot Media Suite Automation (Plex, Radarr, Sonarr, Prowlarr, qBittorrent)</title>
+  
+  <!-- SEO & Social Metadata -->
+  <meta name="description" content="Deploy Plex, Radarr, Sonarr, Prowlarr, and qBittorrent in one shot with a single curl command. Automated cross-platform installer for Linux, Windows, and macOS with native and Docker support.">
+  <meta name="keywords" content="arrstack, plex media server, radarr, sonarr, prowlarr, qbittorrent, flaresolverr, jellyseerr, docker compose, home media server, one command plex install, automated media library, homelab automation">
+  <meta name="author" content="Efrain Rivas / ERTechLab">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://arrstack.ertechlab.com/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://arrstack.ertechlab.com/">
+  <meta property="og:title" content="ArrStack // One-Shot Media Automation Suite">
+  <meta property="og:description" content="Install Plex, Radarr, Sonarr, Prowlarr, and qBittorrent in seconds with a single command. Cross-platform Docker and Native deployment.">
+  <meta property="og:image" content="https://arrstack.ertechlab.com/static/arrstack-logo.svg">
+  <meta property="og:site_name" content="ArrStack">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+
+  <!-- Security Hardening & CSP (Optimized for AdSense & Performance) -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net https://cdn.tailwindcss.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://pagead2.googlesyndication.com https://ep1.adtrafficquality.google https://googleads.g.doubleclick.net https://*.google.com https://*.googlesyndication.com; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com https://*.google.com; child-src 'self' blob: https:;">
+
+  <!-- Google AdSense with Page-Level Auto-Ads -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1596056523034714"
+     crossorigin="anonymous"></script>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({
+      google_ad_client: "ca-pub-1596056523034714",
+      enable_page_level_ads: true
+    });
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            obsidian: '#070A0F',
+            chassis: '#0B111A',
+            garage: '#131D2A',
+            brand: {
+              cyan: '#06B6D4',
+              blue: '#3B82F6',
+              purple: '#8B5CF6',
+              emerald: '#10B981',
+              amber: '#F59E0B'
+            }
+          },
+          fontFamily: {
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-obsidian text-slate-200 font-sans antialiased selection:bg-brand-cyan/20 selection:text-brand-cyan min-h-screen flex flex-col justify-between">
+
+  <!-- TOP ANNOUNCEMENT BANNER -->
+  <div class="bg-gradient-to-r from-brand-cyan/20 via-brand-blue/20 to-brand-purple/20 border-b border-brand-cyan/30 py-2 px-4 text-center text-xs font-mono">
+    <span class="inline-flex items-center gap-1.5 text-brand-cyan font-bold">
+      <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> ArrStack v2.4 Release:
+    </span>
+    <span class="text-slate-300 ml-1">One-shot automated installer for Plex, Sonarr, Radarr, Prowlarr & qBittorrent with Intel QuickSync & NVIDIA NVENC support.</span>
+    <a href="#quick-install" class="ml-2 text-white font-bold underline hover:text-brand-cyan transition">Deploy Now &rarr;</a>
+  </div>
+
+  <!-- NAVIGATION BAR -->
+  <nav class="sticky top-0 z-50 bg-obsidian/90 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-3">
+          <img src="/static/arrstack-logo.svg" alt="ArrStack" class="h-9 w-auto">
+        </a>
+      </div>
+
+      <div class="hidden md:flex items-center gap-6 text-sm font-mono text-slate-300">
+        <a href="#quick-install" class="hover:text-brand-cyan transition">Quick Install</a>
+        <a href="#stack-suite" class="hover:text-brand-cyan transition">Ecosystem</a>
+        <a href="#configurator" class="hover:text-brand-cyan transition">Configurator</a>
+        <a href="#downloads" class="hover:text-brand-cyan transition">Downloads</a>
+        <a href="#ports" class="hover:text-brand-cyan transition">Port Map</a>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="https://ertechlab.com" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg hover:border-brand-cyan/50 hover:text-white transition">
+          <i data-lucide="globe" class="w-3.5 h-3.5 text-brand-cyan"></i>
+          ERTechLab Sovereign
+        </a>
+        <a href="#quick-install" class="inline-flex items-center gap-2 bg-gradient-to-r from-brand-cyan to-brand-blue text-slate-950 font-bold px-4 py-2 rounded-xl text-xs font-mono shadow-lg shadow-brand-cyan/20 hover:opacity-95 transition">
+          <i data-lucide="terminal" class="w-4 h-4"></i>
+          1-Click Deploy
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ADSENSE TOP LEADERBOARD -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+    <div class="bg-chassis/60 border border-slate-800 rounded-xl p-3 text-center">
+      <div class="text-[10px] uppercase font-mono text-slate-500 tracking-widest mb-1.5">Sponsored Cloud & Media Server Infrastructure Partners</div>
+      <ins class="adsbygoogle"
+           style="display:block; min-height:90px;"
+           data-ad-client="ca-pub-1596056523034714"
+           data-ad-slot="auto"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+
+  <!-- HERO SECTION -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 text-center">
+    <div class="inline-flex items-center gap-2 bg-brand-cyan/10 border border-brand-cyan/30 px-3.5 py-1.5 rounded-full text-xs font-mono text-brand-cyan mb-6">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      Zero Host Clutter • Cross-Platform • Zero Technical Skills Required
+    </div>
+
+    <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight leading-tight max-w-4xl mx-auto mb-6">
+      Deploy the Entire <span class="bg-gradient-to-r from-brand-cyan via-brand-blue to-brand-purple bg-clip-text text-transparent">*Arr Media Suite</span> in One Shot.
+    </h1>
+
+    <p class="text-base sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed mb-10">
+      Automate your movies, TV shows, and torrent downloads in seconds. Installs Plex Media Server, Sonarr, Radarr, Prowlarr, qBittorrent, and FlareSolverr seamlessly with one terminal command or 1-click Windows installer.
+    </p>
+
+    <!-- ONE-SHOT COMMAND INSTALL BOX -->
+    <div id="quick-install" class="max-w-3xl mx-auto bg-gradient-to-b from-chassis to-garage border border-slate-700/80 rounded-2xl p-6 sm:p-8 shadow-2xl relative text-left">
+      <!-- OS Tabs -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="setOsTab('linux')" id="tab-linux" class="os-tab-btn active px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 bg-brand-cyan text-slate-950 transition">
+            <i data-lucide="terminal" class="w-3.5 h-3.5"></i> Linux / macOS
+          </button>
+          <button onclick="setOsTab('windows')" id="tab-windows" class="os-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 text-slate-400 hover:text-white transition">
+            <i data-lucide="monitor" class="w-3.5 h-3.5"></i> Windows PowerShell
+          </button>
+          <button onclick="setOsTab('docker')" id="tab-docker" class="os-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 text-slate-400 hover:text-white transition">
+            <i data-lucide="container" class="w-3.5 h-3.5"></i> Docker Compose
+          </button>
+        </div>
+        <span class="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20 hidden sm:inline-block">
+          Auto-Detects Dependencies
+        </span>
+      </div>
+
+      <!-- Command Snippet Box -->
+      <div class="relative bg-black/90 border border-slate-800 rounded-xl p-4 font-mono text-sm text-brand-cyan flex items-center justify-between">
+        <div class="overflow-x-auto pr-12 select-all" id="command-text">
+          curl -fsSL https://arrstack.ertechlab.com/install.sh | bash
+        </div>
+        <button onclick="copyCommand()" id="copy-btn" class="absolute right-3 top-1/2 -translate-y-1/2 bg-slate-800 hover:bg-brand-cyan hover:text-slate-950 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-mono flex items-center gap-1.5 transition">
+          <i data-lucide="copy" class="w-3.5 h-3.5" id="copy-icon"></i>
+          <span id="copy-label">Copy</span>
+        </button>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-400">
+        <div class="flex items-center gap-4">
+          <span class="flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Docker &amp; Native Modes</span>
+          <span class="flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i> Auto-GPU Transcode Passthrough</span>
+        </div>
+        <a href="#downloads" class="text-brand-cyan hover:underline flex items-center gap-1">Or download Windows .EXE / .MSI &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORE MEDIA ECOSYSTEM SUITE -->
+  <section id="stack-suite" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-800/80">
+    <div class="text-center mb-12">
+      <h2 class="text-xs uppercase font-mono text-brand-cyan tracking-widest mb-2">Automated Media Ecosystem</h2>
+      <h3 class="text-3xl font-extrabold text-white">Everything Included in the ArrStack Bundle</h3>
+      <p class="text-slate-400 text-sm max-w-xl mx-auto mt-2">All applications are pre-configured with inter-service networking, persistent volumes, and optimal media directory bindings.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Plex -->
+      <div class="bg-chassis border border-slate-800 hover:border-amber-400/50 transition rounded-2xl p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-mono bg-amber-400/10 text-amber-400 border border-amber-400/20 px-2.5 py-0.5 rounded-full font-bold">PORT 32400</span>
+            <i data-lucide="tv" class="w-5 h-5 text-amber-400"></i>
+          </div>
+          <h4 class="text-xl font-bold text-white mb-2">Plex Media Server</h4>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">The ultimate streaming server. Organizes your movies, TV shows, and music with rich posters, metadata, and hardware-accelerated 4K HDR transcoding for all devices.</p>
+        </div>
+        <div class="border-t border-slate-800/80 pt-3 text-[11px] font-mono text-slate-500 flex justify-between">
+          <span>Web UI: /web</span>
+          <span class="text-emerald-400 font-bold">Hardware Transcoding</span>
+        </div>
+      </div>
+
+      <!-- Radarr -->
+      <div class="bg-chassis border border-slate-800 hover:border-brand-blue/50 transition rounded-2xl p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-mono bg-brand-blue/10 text-brand-blue border border-brand-blue/20 px-2.5 py-0.5 rounded-full font-bold">PORT 7878</span>
+            <i data-lucide="film" class="w-5 h-5 text-brand-blue"></i>
+          </div>
+          <h4 class="text-xl font-bold text-white mb-2">Radarr (Movies)</h4>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">Automated movie collection manager. Monitors RSS feeds for new movie releases, connects to indexers, grabs torrents, and auto-upgrades video formats to 4K REMUX.</p>
+        </div>
+        <div class="border-t border-slate-800/80 pt-3 text-[11px] font-mono text-slate-500 flex justify-between">
+          <span>Web UI: :7878</span>
+          <span class="text-brand-blue font-bold">Auto-Renaming &amp; Sort</span>
+        </div>
+      </div>
+
+      <!-- Sonarr -->
+      <div class="bg-chassis border border-slate-800 hover:border-brand-cyan/50 transition rounded-2xl p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-mono bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20 px-2.5 py-0.5 rounded-full font-bold">PORT 8989</span>
+            <i data-lucide="clapperboard" class="w-5 h-5 text-brand-cyan"></i>
+          </div>
+          <h4 class="text-xl font-bold text-white mb-2">Sonarr (TV Shows)</h4>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">Automated television series manager. Tracks upcoming series episodes, seasons, anime, downloads new airings automatically, and moves them to your Plex TV directory.</p>
+        </div>
+        <div class="border-t border-slate-800/80 pt-3 text-[11px] font-mono text-slate-500 flex justify-between">
+          <span>Web UI: :8989</span>
+          <span class="text-brand-cyan font-bold">Calendar &amp; Episodes</span>
+        </div>
+      </div>
+
+      <!-- Prowlarr -->
+      <div class="bg-chassis border border-slate-800 hover:border-brand-purple/50 transition rounded-2xl p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-mono bg-brand-purple/10 text-brand-purple border border-brand-purple/20 px-2.5 py-0.5 rounded-full font-bold">PORT 9696</span>
+            <i data-lucide="search" class="w-5 h-5 text-brand-purple"></i>
+          </div>
+          <h4 class="text-xl font-bold text-white mb-2">Prowlarr (Indexers)</h4>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">Centralized indexer and tracker proxy. Configure your public and private torrent trackers once, and Prowlarr synchronizes them automatically with both Sonarr and Radarr.</p>
+        </div>
+        <div class="border-t border-slate-800/80 pt-3 text-[11px] font-mono text-slate-500 flex justify-between">
+          <span>Web UI: :9696</span>
+          <span class="text-brand-purple font-bold">Tracker Sync Hub</span>
+        </div>
+      </div>
+
+      <!-- qBittorrent -->
+      <div class="bg-chassis border border-slate-800 hover:border-emerald-400/50 transition rounded-2xl p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-mono bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 px-2.5 py-0.5 rounded-full font-bold">PORT 8080</span>
+            <i data-lucide="download-cloud" class="w-5 h-5 text-emerald-400"></i>
+          </div>
+          <h4 class="text-xl font-bold text-white mb-2">qBittorrent WebUI</h4>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">Headless high-performance BitTorrent download engine. Configured with automated categories, bandwidth scheduling, and seamless integration with Radarr and Sonarr.</p>
+        </div>
+        <div class="border-t border-slate-800/80 pt-3 text-[11px] font-mono text-slate-500 flex justify-between">
+          <span>Web UI: :8080</span>
+          <span class="text-emerald-400 font-bold">Headless Daemon</span>
+        </div>
+      </div>
+
+      <!-- FlareSolverr & Jellyseerr -->
+      <div class="bg-chassis border border-slate-800 hover:border-rose-400/50 transition rounded-2xl p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-mono bg-rose-400/10 text-rose-400 border border-rose-400/20 px-2.5 py-0.5 rounded-full font-bold">PORTS 8191 / 5055</span>
+            <i data-lucide="shield-check" class="w-5 h-5 text-rose-400"></i>
+          </div>
+          <h4 class="text-xl font-bold text-white mb-2">FlareSolverr + Jellyseerr</h4>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">FlareSolverr bypasses Cloudflare anti-bot checks on torrent indexers, while Jellyseerr gives your family and friends a 1-click interface to request new movies and shows.</p>
+        </div>
+        <div class="border-t border-slate-800/80 pt-3 text-[11px] font-mono text-slate-500 flex justify-between">
+          <span>Requests: :5055</span>
+          <span class="text-rose-400 font-bold">User Requests Portal</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERACTIVE STACK CONFIGURATOR & GENERATOR -->
+  <section id="configurator" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-800/80">
+    <div class="text-center mb-12">
+      <h2 class="text-xs uppercase font-mono text-brand-cyan tracking-widest mb-2">Tailored Setup</h2>
+      <h3 class="text-3xl font-extrabold text-white">ArrStack Interactive Configurator</h3>
+      <p class="text-slate-400 text-sm max-w-xl mx-auto mt-2">Customize your media paths, hardware acceleration, and installation mode. The engine generates your ready-to-run deployment payload.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Controls -->
+      <div class="lg:col-span-5 bg-chassis border border-slate-800 rounded-2xl p-6 space-y-6">
+        <div>
+          <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Operating System</label>
+          <select id="cfg-os" onchange="generateConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-brand-cyan">
+            <option value="linux">Linux (Ubuntu / Debian / RHEL / Arch)</option>
+            <option value="windows">Windows 10 / 11 / Server</option>
+            <option value="macos">macOS (Apple Silicon &amp; Intel)</option>
+            <option value="unraid">Unraid / TrueNAS SCALE</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Deployment Mode</label>
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" onclick="setCfgMode('docker')" id="cfg-mode-docker" class="px-4 py-2.5 rounded-xl border text-xs font-mono font-bold border-brand-cyan bg-brand-cyan/20 text-brand-cyan text-center transition">
+              Docker Compose
+            </button>
+            <button type="button" onclick="setCfgMode('native')" id="cfg-mode-native" class="px-4 py-2.5 rounded-xl border text-xs font-mono font-bold border-slate-700 bg-slate-900 text-slate-400 text-center hover:text-white transition">
+              Native Package
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Media Storage Base Path</label>
+          <input type="text" id="cfg-storage" value="/data" oninput="generateConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-brand-cyan" placeholder="e.g. /mnt/media or D:\ArrStack" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Hardware Transcoding GPU</label>
+          <select id="cfg-gpu" onchange="generateConfig()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-brand-cyan">
+            <option value="intel">Intel QuickSync (/dev/dri) - Recommended</option>
+            <option value="nvidia">NVIDIA NVENC (GPU Driver + Runtime)</option>
+            <option value="amd">AMD VA-API (/dev/dri)</option>
+            <option value="none">CPU Software Transcoding Only</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Code Output Preview -->
+      <div class="lg:col-span-7 bg-chassis border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+              <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <span class="text-xs font-mono text-slate-400 ml-2" id="cfg-preview-title">Generated One-Shot Command</span>
+            </div>
+            <button onclick="copyGeneratedCode()" class="text-xs font-mono text-brand-cyan hover:underline flex items-center gap-1">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Payload
+            </button>
+          </div>
+
+          <pre id="cfg-code-display" class="bg-black/80 border border-slate-800 rounded-xl p-4 font-mono text-xs text-emerald-400 overflow-x-auto max-h-[360px] leading-relaxed"></pre>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-slate-500">
+          <span>Production Ready • Validated YAML &amp; Bash</span>
+          <span class="text-brand-cyan font-bold">100% Free &amp; Open Source</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIRECT DOWNLOAD CENTER -->
+  <section id="downloads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-800/80">
+    <div class="text-center mb-12">
+      <h2 class="text-xs uppercase font-mono text-brand-cyan tracking-widest mb-2">Direct Package Binaries</h2>
+      <h3 class="text-3xl font-extrabold text-white">Download Standalone ArrStack Packages</h3>
+      <p class="text-slate-400 text-sm max-w-xl mx-auto mt-2">For non-technical users who prefer standard desktop wizards, click-to-run installers, and offline package scripts.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Windows EXE -->
+      <div class="bg-chassis border border-slate-800 hover:border-brand-cyan/40 transition rounded-2xl p-6 flex flex-col justify-between text-center">
+        <div>
+          <div class="w-12 h-12 bg-brand-cyan/10 text-brand-cyan rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="monitor" class="w-6 h-6"></i>
+          </div>
+          <h4 class="font-bold text-white text-lg mb-1">Windows Setup (.EXE)</h4>
+          <p class="text-xs text-slate-400 mb-4">Interactive graphical setup wizard. Auto-detects Winget/Docker and installs all 6 services with progress bars.</p>
+        </div>
+        <a href="/downloads/ArrStack-Installer.exe" download class="inline-flex items-center justify-center gap-2 bg-brand-cyan hover:bg-brand-cyan/90 text-slate-950 font-bold py-2.5 px-4 rounded-xl text-xs font-mono transition">
+          <i data-lucide="download" class="w-4 h-4"></i> Download .EXE (GUI)
+        </a>
+      </div>
+
+      <!-- Windows MSI -->
+      <div class="bg-chassis border border-slate-800 hover:border-brand-blue/40 transition rounded-2xl p-6 flex flex-col justify-between text-center">
+        <div>
+          <div class="w-12 h-12 bg-brand-blue/10 text-brand-blue rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="package" class="w-6 h-6"></i>
+          </div>
+          <h4 class="font-bold text-white text-lg mb-1">Windows Installer (.MSI)</h4>
+          <p class="text-xs text-slate-400 mb-4">Enterprise Windows Installer package. Ideal for enterprise homelab automation, GPO deployment, and unattended setups.</p>
+        </div>
+        <a href="/downloads/ArrStack-Setup.msi" download class="inline-flex items-center justify-center gap-2 bg-brand-blue hover:bg-brand-blue/90 text-white font-bold py-2.5 px-4 rounded-xl text-xs font-mono transition">
+          <i data-lucide="download" class="w-4 h-4"></i> Download .MSI
+        </a>
+      </div>
+
+      <!-- Linux Shell -->
+      <div class="bg-chassis border border-slate-800 hover:border-brand-purple/40 transition rounded-2xl p-6 flex flex-col justify-between text-center">
+        <div>
+          <div class="w-12 h-12 bg-brand-purple/10 text-brand-purple rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="terminal" class="w-6 h-6"></i>
+          </div>
+          <h4 class="font-bold text-white text-lg mb-1">Universal Bash (.SH)</h4>
+          <p class="text-xs text-slate-400 mb-4">Autonomous installation shell script for Ubuntu, Debian, Fedora, Arch, Alpine, and macOS with systemd unit integration.</p>
+        </div>
+        <a href="/install.sh" download class="inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-brand-purple hover:text-white text-slate-300 font-bold py-2.5 px-4 rounded-xl text-xs font-mono transition">
+          <i data-lucide="download" class="w-4 h-4"></i> Download install.sh
+        </a>
+      </div>
+
+      <!-- Docker Compose -->
+      <div class="bg-chassis border border-slate-800 hover:border-emerald-400/40 transition rounded-2xl p-6 flex flex-col justify-between text-center">
+        <div>
+          <div class="w-12 h-12 bg-emerald-400/10 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="container" class="w-6 h-6"></i>
+          </div>
+          <h4 class="font-bold text-white text-lg mb-1">Docker Compose (.YML)</h4>
+          <p class="text-xs text-slate-400 mb-4">Production-grade Docker Compose manifest. Pre-wired networking, persistent storage, and QuickSync GPU device bindings.</p>
+        </div>
+        <a href="/docker-compose.yml" download class="inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-emerald-400 hover:text-slate-950 text-slate-300 font-bold py-2.5 px-4 rounded-xl text-xs font-mono transition">
+          <i data-lucide="download" class="w-4 h-4"></i> Download .YML
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTS & SERVICES TELEMETRY MAP -->
+  <section id="ports" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-800/80">
+    <div class="text-center mb-12">
+      <h2 class="text-xs uppercase font-mono text-brand-cyan tracking-widest mb-2">Network Topology</h2>
+      <h3 class="text-3xl font-extrabold text-white">Default Ports &amp; Endpoints</h3>
+      <p class="text-slate-400 text-sm max-w-xl mx-auto mt-2">After deployment completes, connect to any application running on your localhost or server IP.</p>
+    </div>
+
+    <div class="bg-chassis border border-slate-800 rounded-2xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="bg-slate-900 border-b border-slate-800 text-slate-400 uppercase">
+            <tr>
+              <th class="py-3 px-4">Application</th>
+              <th class="py-3 px-4">Container Port</th>
+              <th class="py-3 px-4">Default Web Endpoint</th>
+              <th class="py-3 px-4">Default Authentication</th>
+              <th class="py-3 px-4 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/80 text-slate-300">
+            <tr>
+              <td class="py-3.5 px-4 font-bold text-white flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Plex Media Server</td>
+              <td class="py-3.5 px-4 text-amber-400 font-bold">32400</td>
+              <td class="py-3.5 px-4">http://localhost:32400/web</td>
+              <td class="py-3.5 px-4 text-slate-400">Plex.tv OAuth Account</td>
+              <td class="py-3.5 px-4 text-right"><a href="http://localhost:32400/web" target="_blank" class="text-brand-cyan hover:underline">Open WebUI &rarr;</a></td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-bold text-white flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-blue"></span> Radarr (Movies)</td>
+              <td class="py-3.5 px-4 text-brand-blue font-bold">7878</td>
+              <td class="py-3.5 px-4">http://localhost:7878</td>
+              <td class="py-3.5 px-4 text-slate-400">First-time wizard / Optional API key</td>
+              <td class="py-3.5 px-4 text-right"><a href="http://localhost:7878" target="_blank" class="text-brand-cyan hover:underline">Open WebUI &rarr;</a></td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-bold text-white flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-cyan"></span> Sonarr (TV Shows)</td>
+              <td class="py-3.5 px-4 text-brand-cyan font-bold">8989</td>
+              <td class="py-3.5 px-4">http://localhost:8989</td>
+              <td class="py-3.5 px-4 text-slate-400">First-time wizard / Optional API key</td>
+              <td class="py-3.5 px-4 text-right"><a href="http://localhost:8989" target="_blank" class="text-brand-cyan hover:underline">Open WebUI &rarr;</a></td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-bold text-white flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-purple"></span> Prowlarr (Trackers)</td>
+              <td class="py-3.5 px-4 text-brand-purple font-bold">9696</td>
+              <td class="py-3.5 px-4">http://localhost:9696</td>
+              <td class="py-3.5 px-4 text-slate-400">First-time wizard / Optional API key</td>
+              <td class="py-3.5 px-4 text-right"><a href="http://localhost:9696" target="_blank" class="text-brand-cyan hover:underline">Open WebUI &rarr;</a></td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-bold text-white flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> qBittorrent Client</td>
+              <td class="py-3.5 px-4 text-emerald-400 font-bold">8080</td>
+              <td class="py-3.5 px-4">http://localhost:8080</td>
+              <td class="py-3.5 px-4 text-slate-400">User: <code class="text-white">admin</code> / Pass: <code class="text-white">adminadmin</code></td>
+              <td class="py-3.5 px-4 text-right"><a href="http://localhost:8080" target="_blank" class="text-brand-cyan hover:underline">Open WebUI &rarr;</a></td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-bold text-white flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-rose-400"></span> Jellyseerr Requests</td>
+              <td class="py-3.5 px-4 text-rose-400 font-bold">5055</td>
+              <td class="py-3.5 px-4">http://localhost:5055</td>
+              <td class="py-3.5 px-4 text-slate-400">Sign in with Plex Admin Account</td>
+              <td class="py-3.5 px-4 text-right"><a href="http://localhost:5055" target="_blank" class="text-brand-cyan hover:underline">Open WebUI &rarr;</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-black border-t border-slate-800/80 pt-12 pb-8 mt-16 text-slate-400 text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+      <div class="md:col-span-2 space-y-4">
+        <div class="flex items-center gap-3">
+          <img src="/static/arrstack-logo.svg" alt="ArrStack" class="h-8 w-auto">
+        </div>
+        <p class="text-slate-500 max-w-sm leading-relaxed">
+          ArrStack is an open-source, automated deployment framework for personal home media servers. Engineered by ERTechLab for high-performance homelabs, media enthusiasts, and sovereign infrastructure.
+        </p>
+      </div>
+
+      <div>
+        <h5 class="text-white font-bold mb-3 uppercase tracking-wider text-[11px]">ERTechLab Ecosystem</h5>
+        <ul class="space-y-2">
+          <li><a href="https://ertechlab.com" target="_blank" class="hover:text-brand-cyan transition">ERTechLab Official Portal</a></li>
+          <li><a href="https://ertechhome.com" target="_blank" class="hover:text-brand-cyan transition">ERTech Home (Homelab Suite)</a></li>
+          <li><a href="https://drumandrace.com" target="_blank" class="hover:text-brand-cyan transition">Drum &amp; Race Portal</a></li>
+          <li><a href="https://drumnrace.com" target="_blank" class="hover:text-brand-cyan transition">Drum 'N' Race USA</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="text-white font-bold mb-3 uppercase tracking-wider text-[11px]">Compliance &amp; Legal</h5>
+        <ul class="space-y-2">
+          <li><button onclick="openModal('privacy-modal')" class="hover:text-brand-cyan transition text-left">Privacy Policy &amp; Cookies</button></li>
+          <li><button onclick="openModal('terms-modal')" class="hover:text-brand-cyan transition text-left">Terms of Service</button></li>
+          <li><a href="/ads.txt" class="hover:text-brand-cyan transition">Authorized ads.txt</a></li>
+          <li><a href="/sitemap.xml" class="hover:text-brand-cyan transition">XML Sitemap</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-900 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>&copy; 2026 ArrStack // ERTechLab Sovereign Mesh. All rights reserved.</p>
+      <p class="text-slate-600">Architected by Efrain Rivas</p>
+    </div>
+  </footer>
+
+  <!-- PRIVACY POLICY MODAL -->
+  <div id="privacy-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-chassis border border-slate-700 rounded-2xl max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto font-sans text-sm text-slate-300">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <h3 class="font-bold text-white text-base">Privacy Policy &amp; Cookie Compliance</h3>
+        <button onclick="closeModal('privacy-modal')" class="text-slate-400 hover:text-white">&times;</button>
+      </div>
+      <div class="space-y-4 text-xs leading-relaxed text-slate-400">
+        <p>ArrStack respects visitor privacy. We do not sell or collect personal identifiable information.</p>
+        <p><strong>Google AdSense:</strong> We display advertisements served by Google. Third-party vendors, including Google, use cookies to serve ads based on prior visits to this website or other websites.</p>
+        <p><strong>Opt-Out:</strong> Users may opt out of personalized advertising by visiting Google Ads Settings.</p>
+      </div>
+      <div class="mt-6 text-right">
+        <button onclick="closeModal('privacy-modal')" class="bg-brand-cyan text-slate-950 font-bold px-4 py-2 rounded-xl text-xs font-mono">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERMS MODAL -->
+  <div id="terms-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-chassis border border-slate-700 rounded-2xl max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto font-sans text-sm text-slate-300">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <h3 class="font-bold text-white text-base">Terms of Service</h3>
+        <button onclick="closeModal('terms-modal')" class="text-slate-400 hover:text-white">&times;</button>
+      </div>
+      <div class="space-y-4 text-xs leading-relaxed text-slate-400">
+        <p>ArrStack provides automated installation scripts for open-source media software. Software is provided "AS IS", without warranty of any kind.</p>
+        <p>Users are responsible for ensuring compliance with copyright laws and software licensing in their respective jurisdictions.</p>
+      </div>
+      <div class="mt-6 text-right">
+        <button onclick="closeModal('terms-modal')" class="bg-brand-cyan text-slate-950 font-bold px-4 py-2 rounded-xl text-xs font-mono">Accept &amp; Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // 1. OS TABS & ONE-LINER COMMANDS
+    const commands = {
+      linux: 'curl -fsSL https://arrstack.ertechlab.com/install.sh | bash',
+      windows: 'irm https://arrstack.ertechlab.com/install.ps1 | iex',
+      docker: 'curl -fsSL https://arrstack.ertechlab.com/docker-compose.yml -o docker-compose.yml && docker compose up -d'
+    };
+
+    let activeTab = 'linux';
+
+    function setOsTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.os-tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-brand-cyan', 'text-slate-950');
+        btn.classList.add('text-slate-400');
+      });
+      const current = document.getElementById('tab-' + tab);
+      if (current) {
+        current.classList.add('active', 'bg-brand-cyan', 'text-slate-950');
+        current.classList.remove('text-slate-400');
+      }
+      document.getElementById('command-text').innerText = commands[tab];
+    }
+
+    function copyCommand() {
+      const text = document.getElementById('command-text').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const label = document.getElementById('copy-label');
+        label.innerText = 'Copied!';
+        setTimeout(() => { label.innerText = 'Copy'; }, 2000);
+      });
+    }
+
+    // 2. CONFIGURATOR
+    let cfgMode = 'docker';
+
+    function setCfgMode(mode) {
+      cfgMode = mode;
+      const bDocker = document.getElementById('cfg-mode-docker');
+      const bNative = document.getElementById('cfg-mode-native');
+      if (mode === 'docker') {
+        bDocker.className = 'px-4 py-2.5 rounded-xl border text-xs font-mono font-bold border-brand-cyan bg-brand-cyan/20 text-brand-cyan text-center transition';
+        bNative.className = 'px-4 py-2.5 rounded-xl border text-xs font-mono font-bold border-slate-700 bg-slate-900 text-slate-400 text-center hover:text-white transition';
+      } else {
+        bNative.className = 'px-4 py-2.5 rounded-xl border text-xs font-mono font-bold border-brand-cyan bg-brand-cyan/20 text-brand-cyan text-center transition';
+        bDocker.className = 'px-4 py-2.5 rounded-xl border text-xs font-mono font-bold border-slate-700 bg-slate-900 text-slate-400 text-center hover:text-white transition';
+      }
+      generateConfig();
+    }
+
+    function generateConfig() {
+      const os = document.getElementById('cfg-os').value;
+      const storage = document.getElementById('cfg-storage').value || '/data';
+      const gpu = document.getElementById('cfg-gpu').value;
+
+      let output = '';
+      if (cfgMode === 'docker') {
+        document.getElementById('cfg-preview-title').innerText = 'docker-compose.yml (Ready to Deploy)';
+        let gpuDevices = '';
+        if (gpu === 'intel' || gpu === 'amd') {
+          gpuDevices = '    devices:\n      - /dev/dri:/dev/dri\n';
+        } else if (gpu === 'nvidia') {
+          gpuDevices = '    deploy:\n      resources:\n        reservations:\n          devices:\n            - driver: nvidia\n              count: all\n              capabilities: [gpu]\n';
+        }
+
+        output = `version: "3.8"
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: arrstack-plex
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./config/plex:/config
+      - ${storage}/media/tv:/tv
+      - ${storage}/media/movies:/movies
+${gpuDevices}    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: arrstack-radarr
+    volumes:
+      - ./config/radarr:/config
+      - ${storage}/media/movies:/movies
+      - ${storage}/downloads:/downloads
+    ports: ["7878:7878"]
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: arrstack-sonarr
+    volumes:
+      - ./config/sonarr:/config
+      - ${storage}/media/tv:/tv
+      - ${storage}/downloads:/downloads
+    ports: ["8989:8989"]
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: arrstack-prowlarr
+    volumes: ["./config/prowlarr:/config"]
+    ports: ["9696:9696"]
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: arrstack-qbittorrent
+    environment:
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - ./config/qbittorrent:/config
+      - ${storage}/downloads:/downloads
+    ports: ["8080:8080", "6881:6881", "6881:6881/udp"]
+    restart: unless-stopped`;
+      } else {
+        document.getElementById('cfg-preview-title').innerText = 'Native Command Execution';
+        if (os === 'windows') {
+          output = `# Native Windows Installation via Winget & PowerShell
+winget install --id Plex.PlexMediaServer -e --silent
+winget install --id TeamSonarr.Sonarr -e --silent
+winget install --id Radarr.Radarr -e --silent
+winget install --id Prowlarr.Prowlarr -e --silent
+winget install --id qBittorrent.qBittorrent -e --silent
+
+New-Item -ItemType Directory -Path "${storage}\\media\\movies", "${storage}\\media\\tv", "${storage}\\downloads" -Force`;
+        } else if (os === 'macos') {
+          output = `# Native macOS Homebrew Casks
+brew install --cask plex-media-server sonarr radarr prowlarr qbittorrent
+mkdir -p "${storage}/media/movies" "${storage}/media/tv" "${storage}/downloads"`;
+        } else {
+          output = `# Native Linux Script
+curl -fsSL https://arrstack.ertechlab.com/install.sh | bash -s -- --native --storage "${storage}"`;
+        }
+      }
+      document.getElementById('cfg-code-display').innerText = output;
+    }
+
+    function copyGeneratedCode() {
+      const code = document.getElementById('cfg-code-display').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        alert("Payload copied to clipboard!");
+      });
+    }
+
+    // 3. MODAL HELPERS
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) { el.classList.remove('hidden'); el.classList.add('flex'); }
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      generateConfig();
+    });
+  </script>
+</body>
+</html>

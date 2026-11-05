@@ -1,0 +1,135 @@
+version: "3.8"
+
+# ==============================================================================
+#  ArrStack Production Docker Compose // ERTechLab
+#  Unified Plex, Radarr, Sonarr, Prowlarr, qBittorrent, FlareSolverr & Jellyseerr
+#  Deploy with: docker compose up -d
+#  Web: https://arrstack.ertechlab.com
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # PLEX MEDIA SERVER: Streaming & Transcoding Engine
+  # ----------------------------------------------------------------------------
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: arrstack-plex
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - VERSION=docker
+      # Optional: Claim token from https://plex.tv/claim
+      - PLEX_CLAIM=
+    volumes:
+      - ./config/plex:/config
+      - ./media/tv:/tv:ro
+      - ./media/movies:/movies:ro
+    # Hardware Transcoding: Intel QuickSync / AMD VA-API passthrough
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------------------
+  # RADARR: Automated Movie Management & Upgrade Engine
+  # ----------------------------------------------------------------------------
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: arrstack-radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./config/radarr:/config
+      - ./media/movies:/movies
+      - ./downloads:/downloads
+    ports:
+      - "7878:7878"
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------------------
+  # SONARR: Automated TV Show & Series Episode Manager
+  # ----------------------------------------------------------------------------
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: arrstack-sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./config/sonarr:/config
+      - ./media/tv:/tv
+      - ./downloads:/downloads
+    ports:
+      - "8989:8989"
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------------------
+  # PROWLARR: Unified Indexer & Tracker Synchronization Manager
+  # ----------------------------------------------------------------------------
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: arrstack-prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./config/prowlarr:/config
+    ports:
+      - "9696:9696"
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------------------
+  # QBITTORRENT: High-Performance Headless Torrent Download Engine
+  # ----------------------------------------------------------------------------
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: arrstack-qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - ./config/qbittorrent:/config
+      - ./downloads:/downloads
+    ports:
+      - "8080:8080"
+      - "6881:6881"
+      - "6881:6881/udp"
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------------------
+  # FLARESOLVERR: Cloudflare Anti-Bot Bypass Proxy for Prowlarr Indexers
+  # ----------------------------------------------------------------------------
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: arrstack-flaresolverr
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=Etc/UTC
+    ports:
+      - "8191:8191"
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------------------
+  # JELLYSEERR: 1-Click Movie & TV Show Discovery and Request Portal
+  # ----------------------------------------------------------------------------
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: arrstack-jellyseerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=Etc/UTC
+    volumes:
+      - ./config/jellyseerr:/app/config
+    ports:
+      - "5055:5055"
+    restart: unless-stopped

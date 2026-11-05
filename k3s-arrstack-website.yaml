@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arrstack-website
+  namespace: tools
+  labels:
+    app: arrstack-website
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: arrstack-website
+  template:
+    metadata:
+      labels:
+        app: arrstack-website
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k3s-cp-01
+      containers:
+      - name: website
+        image: python:3.11-alpine
+        imagePullPolicy: IfNotPresent
+        command:
+        - sh
+        - -c
+        - while [ ! -f /app/app.py ]; do sleep 1; done; python /app/app.py
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: PORT
+          value: "8080"
+        volumeMounts:
+        - name: app-volume
+          mountPath: /app
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+      volumes:
+      - name: app-volume
+        hostPath:
+          path: /var/lib/appdata/arrstack-website
+          type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: arrstack-website-svc
+  namespace: tools
+  labels:
+    app: arrstack-website
+spec:
+  type: NodePort
+  selector:
+    app: arrstack-website
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    nodePort: 30093
